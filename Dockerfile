@@ -1,10 +1,23 @@
-FROM python:3.11-rc-bullseye
+FROM python:3.11-rc-bullseye AS builder
 
-WORKDIR /src/app
-ENV FLASK_APP=/src/app/main
+WORKDIR /app
+ENV PATH="/venv/bin:$PATH"
+
+RUN rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m venv /venv
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY ./app /src/app
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["gunicorn", "--conf", "gunicorn_conf.py", "--bind", "0.0.0.0:80", "main:app"]
+###########
+FROM python:3.11-rc-slim-bullseye AS app
+
+ENV PATH="/venv/bin:$PATH"
+
+COPY ./app /app
+WORKDIR /app
+COPY --from=builder /venv /venv
+RUN rm -rf /var/lib/apt/lists/*
+
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "main:app"]
