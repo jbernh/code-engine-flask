@@ -1,4 +1,4 @@
-# Minimal Flask Application using Gunicorn
+# Minimal Flask Application using Gunicorn and Docker
 
 This exists primarily for demonstrating/testing IBM Code Engine.
 It serves content with [Gunicorn](https://gunicorn.org/#quickstart).
